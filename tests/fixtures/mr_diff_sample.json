@@ -1,0 +1,49 @@
+diff --git a/src/auth.py b/src/auth.py
+new file mode 100644
+--- /dev/null
++++ b/src/auth.py
+@@ -0,0 +1,45 @@
++from flask import Flask, request
++import hashlib
++
++app = Flask(__name__)
++
++# Database of users (for demo only)
++users_db = {}
++
++@app.route("/login", methods=["POST"])
++def login():
++    username = request.json["username"]
++    password = request.json["password"]
++
++    # Hash the password
++    hashed = hashlib.md5(password.encode()).hexdigest()
++
++    if users_db.get(username) == hashed:
++        return {"status": "ok", "token": hashlib.md5(username.encode()).hexdigest()}
++    return {"status": "error"}, 401
++
++@app.route("/register", methods=["POST"])
++def register():
++    username = request.json["username"]
++    password = request.json["password"]
++
++    if username in users_db:
++        return {"status": "error", "message": "User exists"}, 409
++
++    users_db[username] = hashlib.md5(password.encode()).hexdigest()
++    return {"status": "ok"}
++
++@app.route("/user/<user_id>")
++def get_user(user_id):
++    # No authentication check on this endpoint
++    return {"user_id": user_id, "name": users_db.get(user_id, "Unknown")}
++
++@app.route("/sql-test")
++def sql_test():
++    query = "SELECT * FROM users WHERE id = " + request.args.get("id")
++    # Execute the query
++    return {"query": query}
++
++if __name__ == "__main__":
++    app.run(debug=True)
