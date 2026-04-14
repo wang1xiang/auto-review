@@ -5,6 +5,7 @@ module.exports = {
       script: 'dist/index.js',
       args: 'start',
       interpreter: 'node',
+      exec_mode: 'fork',
       instances: 1,
       autorestart: true,
       max_memory_restart: '256M',

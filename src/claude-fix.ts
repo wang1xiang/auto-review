@@ -1,4 +1,4 @@
-import { exec } from 'node:child_process';
+import { exec, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 import { formatFixPrompt, type ReviewResult } from './gemini-review.js';
 
@@ -35,11 +35,23 @@ export async function fixIssues(
   const beforeChanges = await getModifiedFiles(workDir);
 
   try {
-    // Pass prompt via stdin to avoid shell escaping issues with backticks/quotes
-    await execAsync(
-      `claude -p --permission-mode acceptEdits --allowed-tools "Read Edit Bash" --output-format json --no-session-persistence`,
-      { cwd: workDir, timeout: 600_000, input: prompt },
-    );
+    // Use spawn with stdin to avoid shell escaping issues
+    const child = spawn('claude', [
+      '-p',
+      '--permission-mode', 'acceptEdits',
+      '--allowed-tools', 'Read Edit Bash',
+      '--output-format', 'json',
+      '--no-session-persistence',
+    ], { cwd: workDir, stdio: ['pipe', 'inherit', 'inherit'] });
+
+    child.stdin.write(prompt);
+    child.stdin.end();
+
+    await new Promise<void>((resolve, reject) => {
+      const timer = setTimeout(() => { child.kill(); reject(new Error('Claude Code 超时 (600s)')); }, 600_000);
+      child.on('close', (code) => { clearTimeout(timer); code === 0 ? resolve() : reject(new Error(`进程退出码 ${code}`)); });
+      child.on('error', (e) => { clearTimeout(timer); reject(e); });
+    });
     console.log('Claude Code 修复完成。');
   } catch (e: unknown) {
     const error = e instanceof Error ? e.message : String(e);

@@ -12,7 +12,7 @@
     "dev": "tsx src/index.ts start",
     "dev:review": "tsx src/index.ts review",
     "dev:listener": "tsx src/index.ts listener",
-    "pm2:start": "npm run build && pm2 start ecosystem.config.js",
+    "pm2:start": "npm run build && pm2 start ecosystem.config.cjs",
     "pm2:stop": "pm2 stop auto-review",
     "pm2:restart": "npm run build && pm2 restart auto-review",
     "pm2:logs": "pm2 logs auto-review",
