@@ -132,6 +132,25 @@ npm run dev review    # review mode
 npm run dev listener  # listener mode
 ```
 
+### Production (PM2)
+
+```bash
+# Install PM2 globally
+npm install -g pm2
+
+# Build and start with PM2 (auto-restart on crash)
+npm run pm2:start
+
+# View logs
+npm run pm2:logs
+
+# Restart after code changes
+npm run pm2:restart
+
+# Stop
+npm run pm2:stop
+```
+
 ## Workflow
 
 1. Developer creates an MR (or pushes new commits to an existing MR)

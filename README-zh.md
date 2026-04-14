@@ -132,6 +132,25 @@ npm run dev review    # 审查模式
 npm run dev listener  # 监听模式
 ```
 
+### 生产环境（PM2 进程管理）
+
+```bash
+# 全局安装 PM2
+npm install -g pm2
+
+# 构建并启动（崩溃自动重启）
+npm run pm2:start
+
+# 查看日志
+npm run pm2:logs
+
+# 修改代码后重启
+npm run pm2:restart
+
+# 停止
+npm run pm2:stop
+```
+
 ## 工作流程
 
 1. 开发者创建 MR（或向已有 MR 推送新提交）
