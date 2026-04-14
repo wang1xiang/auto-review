@@ -153,7 +153,7 @@ npm run dev listener  # 监听模式
 | `GEMINI_MODEL` | `gemini-2.5-flash-lite` | 审查模型 |
 | `CLAUDE_WORK_DIR` | - | 本地 Git 仓库路径 |
 | `MAX_REVIEW_ROUNDS` | `2` | 最大审查-修复循环轮数 |
-| `WEBHOOK_PORT` | `8080` | Webhook 服务端口 |
+| `WEBHOOK_PORT` | `8081` | Webhook 服务端口 |
 | `HTTPS_PROXY` | - | 代理地址（需要代理时必填） |
 | `HTTP_PROXY` | - | 代理地址（需要代理时必填） |
 | `LOG_LEVEL` | `INFO` | 日志级别 |

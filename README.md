@@ -153,7 +153,7 @@ npm run dev listener  # listener mode
 | `GEMINI_MODEL` | `gemini-2.5-flash-lite` | Model for code review |
 | `CLAUDE_WORK_DIR` | - | Local git repo path for Claude to fix |
 | `MAX_REVIEW_ROUNDS` | `2` | Maximum review-fix cycles |
-| `WEBHOOK_PORT` | `8080` | Port for webhook server |
+| `WEBHOOK_PORT` | `8081` | Port for webhook server |
 | `HTTPS_PROXY` | - | Proxy URL (required if behind firewall) |
 | `HTTP_PROXY` | - | Proxy URL (required if behind firewall) |
 | `LOG_LEVEL` | `INFO` | Logging level |

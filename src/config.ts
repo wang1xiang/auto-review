@@ -8,7 +8,7 @@ const configSchema = z.object({
   geminiModel: z.string().default('gemini-2.5-flash-lite'),
   claudeWorkDir: z.string(),
   maxReviewRounds: z.coerce.number().default(2),
-  webhookPort: z.coerce.number().default(8080),
+  webhookPort: z.coerce.number().default(8081),
   logLevel: z.enum(['DEBUG', 'INFO', 'WARN', 'ERROR']).default('INFO'),
 });
 
@@ -23,7 +23,7 @@ export function loadConfig(): Config {
     geminiModel: process.env.GEMINI_MODEL ?? 'gemini-2.5-flash-lite',
     claudeWorkDir: process.env.CLAUDE_WORK_DIR,
     maxReviewRounds: process.env.MAX_REVIEW_ROUNDS ?? 2,
-    webhookPort: process.env.WEBHOOK_PORT ?? 8080,
+    webhookPort: process.env.WEBHOOK_PORT ?? 8081,
     logLevel: process.env.LOG_LEVEL ?? 'INFO',
   });
 
