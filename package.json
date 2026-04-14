@@ -9,7 +9,9 @@
     "start": "node dist/index.js",
     "start:listener": "node dist/index.js listener",
     "review": "node dist/index.js review",
-    "dev": "tsx src/index.ts"
+    "dev": "tsx src/index.ts review",
+    "dev:review": "tsx src/index.ts review",
+    "dev:listener": "tsx src/index.ts listener"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
