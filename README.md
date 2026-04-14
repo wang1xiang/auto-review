@@ -2,6 +2,8 @@
 
 Automated code review workflow: **Gemini reviews MR diffs → Claude Code fixes issues → loop up to N rounds → human makes final merge decision**.
 
+[中文文档](README-zh.md)
+
 ## Architecture
 
 ```
