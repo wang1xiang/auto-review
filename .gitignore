@@ -1,6 +1,5 @@
 .env
-.venv/
-__pycache__/
-*.pyc
+node_modules/
+dist/
 state.json
-logs/
+*.tsbuildinfo

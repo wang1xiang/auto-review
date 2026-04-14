@@ -1,0 +1,26 @@
+{
+  "name": "auto-review",
+  "version": "0.1.0",
+  "description": "Automated code review workflow: Gemini reviews MR diffs, Claude Code fixes issues",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "start:listener": "node dist/index.js listener",
+    "review": "node dist/index.js review",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^4.21.0",
+    "https-proxy-agent": "^7.0.6",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

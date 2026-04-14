@@ -6,21 +6,21 @@ Automated code review workflow: **Gemini reviews MR diffs → Claude Code fixes 
 
 ```
 ┌──────────────┐     webhook      ┌──────────────────┐
-│   GitLab     │ ────────────────>│  webhook_server   │
-│  (MR opened) │                  │     (Flask)       │
+│   GitLab     │ ────────────────>│  webhook-server    │
+│  (MR opened) │                  │     (Express)      │
 └──────────────┘                  └────────┬─────────┘
                                           │
                                           ▼
                                    ┌──────────────┐
-                                   │   runner.py   │
+                                   │   runner.ts   │
                                    │  (orchestrator)│
                                    └──┬─────────┬──┘
                                       │         │
                     ┌─────────────────┘         └─────────────────┐
                     ▼                                             ▼
             ┌───────────────┐                          ┌──────────────────┐
-            │ gitlab_client  │                          │   gemini_review   │
-            │  .get_mr_diffs()│                         │   .review(diff)   │
+            │ gitlab-client  │                          │   gemini-review   │
+            │  .getMrDiffText()│                        │   .reviewDiff()   │
             └───────┬───────┘                          └────────┬─────────┘
                     │                                          │
                     ▼                                          ▼
@@ -28,7 +28,7 @@ Automated code review workflow: **Gemini reviews MR diffs → Claude Code fixes 
                                                               │
                                               ┌───────────────┼──────────────┐
                                               ▼               ▼              ▼
-                                     post to GitLab     claude_fix.fix   update state
+                                     post to GitLab     claude-fix.fix   update state
                                      (review comment)   (if not approved)
                                                               │
                                                               ▼
@@ -49,9 +49,7 @@ Automated code review workflow: **Gemini reviews MR diffs → Claude Code fixes 
 
 ```bash
 cd projects/auto-review
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .
+npm install
 ```
 
 ### 2. Configure
@@ -61,26 +59,41 @@ cp .env.example .env
 # Edit .env with your values:
 # - GITLAB_URL: Your GitLab instance URL
 # - GITLAB_TOKEN: Private Token with `api` scope
-# - GITLAB_PROJECT_ID: Project ID or URL-encoded path (e.g. "group%2Fproject")
+# - GITLAB_PROJECT_ID: Project ID or URL-encoded path (e.g. "937")
 # - GEMINI_API_KEY: Google AI Studio API key
+# - GEMINI_MODEL: Model for code review (default: gemini-2.5-flash-lite)
 # - CLAUDE_WORK_DIR: Path to your local git clone of the project
+# - HTTPS_PROXY: Proxy URL if behind a firewall (e.g. http://127.0.0.1:7897)
 ```
 
-### 3. Test connectivity
+### 3. Build
 
 ```bash
-python -m src.runner
+npm run build
+```
+
+Or use tsx for development without building:
+
+```bash
+npm run dev review
+npm run dev listener
+```
+
+### 4. Test connectivity
+
+```bash
+npm run review
 ```
 
 This will test GitLab connection and process all open MRs.
 
-### 4. Start the webhook listener
+### 5. Start the webhook listener
 
 ```bash
-./scripts/start_listener.sh
+npm run start:listener
 ```
 
-### 5. Configure GitLab webhook
+### 6. Configure GitLab webhook
 
 In your GitLab project: **Settings > Webhooks**
 
@@ -97,22 +110,24 @@ Then set the webhook URL to the ngrok URL.
 
 ## Usage
 
-### Manual review (one-shot)
+### Manual review (process all open MRs)
 
 ```bash
-./scripts/run_review.sh <MR_IID>
-```
-
-### Process all open MRs
-
-```bash
-python -m src.runner
+npm run review
 ```
 
 ### Start webhook listener
 
 ```bash
-./scripts/start_listener.sh
+npm run start:listener
+```
+
+### Development mode (no build needed)
+
+```bash
+npm run dev           # same as review
+npm run dev review    # review mode
+npm run dev listener  # listener mode
 ```
 
 ## Workflow
@@ -133,10 +148,12 @@ python -m src.runner
 | `GITLAB_TOKEN` | - | Private Token with `api` scope |
 | `GITLAB_PROJECT_ID` | - | Project ID or URL-encoded path |
 | `GEMINI_API_KEY` | - | Google AI Studio API key |
-| `GEMINI_MODEL` | `gemini-2.5-flash` | Model for code review |
+| `GEMINI_MODEL` | `gemini-2.5-flash-lite` | Model for code review |
 | `CLAUDE_WORK_DIR` | - | Local git repo path for Claude to fix |
 | `MAX_REVIEW_ROUNDS` | `2` | Maximum review-fix cycles |
 | `WEBHOOK_PORT` | `8080` | Port for webhook server |
+| `HTTPS_PROXY` | - | Proxy URL (required if behind firewall) |
+| `HTTP_PROXY` | - | Proxy URL (required if behind firewall) |
 | `LOG_LEVEL` | `INFO` | Logging level |
 
 ## V1 Limitations
@@ -152,16 +169,24 @@ python -m src.runner
 ```
 auto-review/
 ├── src/
-│   ├── config.py            # Configuration loader
-│   ├── gitlab_client.py     # GitLab API wrapper
-│   ├── gemini_review.py     # Gemini review engine
-│   ├── claude_fix.py        # Claude Code fix orchestrator
-│   ├── runner.py            # Main review-fix loop
-│   └── webhook_server.py    # Flask webhook endpoint
+│   ├── config.ts            # Configuration loader (Zod)
+│   ├── gitlab-client.ts     # GitLab API wrapper
+│   ├── gemini-review.ts     # Gemini review engine
+│   ├── claude-fix.ts        # Claude Code fix orchestrator
+│   ├── runner.ts            # Main review-fix loop
+│   ├── webhook-server.ts    # Express webhook endpoint
+│   └── index.ts             # CLI entry point
 ├── scripts/
 │   ├── run_review.sh        # Manual review trigger
 │   └── start_listener.sh    # Start webhook listener
-└── tests/fixtures/
-    ├── mr_webhook.json      # Sample webhook payload
-    └── mr_diff_sample.json  # Sample MR diff
+└── .env                     # Configuration (not committed)
 ```
+
+## Tech Stack
+
+- **Runtime**: Node.js 18+
+- **Language**: TypeScript
+- **Webhook Server**: Express
+- **GitLab API**: Custom client with https-proxy-agent support
+- **Gemini API**: Direct HTTPS POST with structured JSON output
+- **Claude Code**: `claude -p` non-interactive mode with `--permission-mode acceptEdits`
