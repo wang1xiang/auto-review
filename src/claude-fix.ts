@@ -35,9 +35,10 @@ export async function fixIssues(
   const beforeChanges = await getModifiedFiles(workDir);
 
   try {
+    // Pass prompt via stdin to avoid shell escaping issues with backticks/quotes
     await execAsync(
-      `claude -p "${prompt.replace(/"/g, '\\"')}" --permission-mode acceptEdits --allowed-tools "Read Edit Bash" --output-format json --no-session-persistence`,
-      { cwd: workDir, timeout: 600_000 },
+      `claude -p --permission-mode acceptEdits --allowed-tools "Read Edit Bash" --output-format json --no-session-persistence`,
+      { cwd: workDir, timeout: 600_000, input: prompt },
     );
     console.log('Claude Code 修复完成。');
   } catch (e: unknown) {
