@@ -17,5 +17,15 @@ module.exports = {
       merge_logs: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss',
     },
+    {
+      name: 'ngrok',
+      cmd: `ngrok http 8081 --log=stdout --log-format=json`,
+      autorestart: true,
+      max_memory_restart: '100M',
+      out_file: './logs/ngrok.log',
+      error_file: './logs/ngrok.log',
+      merge_logs: true,
+      log_date_format: 'YYYY-MM-DD HH:mm:ss',
+    },
   ],
 };

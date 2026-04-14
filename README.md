@@ -135,14 +135,19 @@ npm run dev listener  # listener mode
 ### Production (PM2)
 
 ```bash
-# Install PM2 globally
+# Install PM2 and ngrok globally
 npm install -g pm2
+# Install ngrok: https://ngrok.com/download
 
-# Build and start with PM2 (auto-restart on crash)
+# Build and start (auto-review + ngrok tunnel)
 npm run pm2:start
 
 # View logs
-npm run pm2:logs
+npm run pm2:logs          # all logs
+npm run pm2:logs ngrok    # ngrok logs only (to get public URL)
+
+# Get ngrok public URL → use this for GitLab webhook
+curl http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
 
 # Restart after code changes
 npm run pm2:restart

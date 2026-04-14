@@ -135,14 +135,19 @@ npm run dev listener  # 监听模式
 ### 生产环境（PM2 进程管理）
 
 ```bash
-# 全局安装 PM2
+# 全局安装 PM2 和 ngrok
 npm install -g pm2
+# 安装 ngrok: https://ngrok.com/download
 
-# 构建并启动（崩溃自动重启）
+# 构建并启动（auto-review + ngrok 隧道）
 npm run pm2:start
 
 # 查看日志
-npm run pm2:logs
+npm run pm2:logs           # 所有日志
+npm run pm2:logs ngrok     # ngrok 日志（获取公网 URL）
+
+# 获取 ngrok 公网 URL → 用于 GitLab webhook 配置
+curl http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
 
 # 修改代码后重启
 npm run pm2:restart
